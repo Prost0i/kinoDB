@@ -1,0 +1,172 @@
+{{ block "title" . }}
+
+{{ template "header" . }}
+
+<div class="mt-10">
+	<div class="flex flex-row flex-wrap gap-5 justify-center">
+		<div class="flex-none w-80">
+			<img src="/static/images/image1.jpg" class="rounded-lg shadow-2xl" />
+			<div class="flex ml-4 gap-0.5 shrink rating py-3">
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
+				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" checked disabled />
+				<p class="ml-2 text-lg">9.5</p>
+			</div>
+			<div class="ml-4">
+				<p>Оценок: 10</p>
+				<p>Рецензий: 3</p>
+			</div>
+		</div>
+		<div class="min-w-80 w-2/4">
+			<h1 class="text-5xl font-bold">Breaking Bad</h1>
+			<h2 class="text-2xl font-bold">Во все тяжкие</h2>
+		<h3 class="text-2xl py-1">Сериал</h3>
+			<h4 class="text-xl text-red-600">18+</h4>
+			<div class="overflow-x-auto">
+				<table class="table max-w-96">
+					<tbody>
+						<tr>
+							<td>Дата премьеры</td>
+							<td>20.01.2008</td>
+						</tr>
+						<tr>
+							<td>Страна</td>
+							<td>США</td>
+						</tr>
+						<tr>
+							<td>Жанр</td>
+							<td>криминал, драма, триллер</td>
+						</tr>
+						<tr>
+							<td>Количество сезонов</td>
+							<td>5</td>
+						</tr>
+						<tr>
+							<td>Количество эпизодов</td>
+							<td>62</td>
+						</tr>
+						<tr>
+							<td>Продолжительность</td>
+							<td>45 минут</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<p class="py-3">Школьный учитель химии Уолтер Уайт узнаёт, что болен раком лёгких. Учитывая сложное финансовое состояние дел семьи, а также перспективы, Уолтер решает заняться изготовлением метамфетамина. Для этого он привлекает своего бывшего ученика Джесси Пинкмана, когда-то исключённого из школы при активном содействии Уайта. Пинкман сам занимался варкой мета, но накануне, в ходе рейда УБН, он лишился подельника и лаборатории.</p>
+		</div>
+
+	</div>
+
+	<div class="flex flex-col justify-center items-center gap-5 ml-5 mr-5 pt-10">
+		<div class="w-full max-w-[1200px]">
+			<div class="flex flex-row flex-wrap shrink rating">
+				<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+					<p class="mr-4">Оставить оценку</p>
+				</div>
+				<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" checked/>
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
+					<p class="ml-2 text-lg">1</p>
+				</div>
+			</div>
+			<textarea class="textarea textarea-bordered min-h-[200px] w-full max-w-[1200px]" placeholder="Оставить рецензию...&#10;Если хотите просто поставить оценку, оставьте это поле пустым"></textarea>
+			<button class="justify-self-end btn btn-outline mt-5">Отправить</button>
+		</div>
+	</div>
+	<div class="flex w-full max-w-[1200px] justify-end">
+	</div>
+
+
+	<div class="flex flex-col justify-center items-center gap-5 ml-5 mr-5 pt-10">
+		<div class="flex-initial card grow w-full max-w-[1200px] bg-base-200 shadow-xl">
+			<div class="card-body">
+				<h3 class="card-title text-sm">
+
+					<div class="avatar">
+						<div class="w-10 rounded-full">
+							<img alt="Avatar" src="/static/images/avatar.jpg" />
+						</div>
+					</div>
+					Username
+				</h3>
+
+				<h2 class="card-title">
+					Рецензия
+					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
+					<p class="text-base">8</p>
+				</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ligula arcu, blandit sed massa sit amet, fringilla egestas mauris. Ut pretium egestas orci in mollis. Ut eu ipsum sed erat rutrum accumsan. Fusce molestie arcu mauris, id luctus elit accumsan laoreet. Etiam semper massa sed sagittis auctor. Duis ac nunc eros. Etiam quis pharetra ipsum. Cras sapien sem, interdum et nibh at, dictum pellentesque dui. Aliquam pharetra odio sit amet tortor lacinia, ac luctus nulla dictum. Donec vitae ipsum consectetur, tempus augue et, consequat libero. Aliquam sollicitudin tempor consequat. Morbi sit amet augue velit. Proin id auctor erat. Sed varius eu lorem ac auctor. Maecenas a viverra arcu. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+
+				<p>Nam in mi libero. Pellentesque blandit purus et nunc tempor congue. Pellentesque eleifend accumsan sagittis. Fusce sodales nunc sit amet ornare dictum. Ut sit amet porta orci, et suscipit enim. Duis sollicitudin metus nec est viverra tristique. Morbi varius, mi nec accumsan fermentum, ligula massa iaculis tortor, vitae consectetur nulla nisi nec tellus. Proin nec velit in diam facilisis tincidunt. Nulla non egestas enim. Suspendisse id tellus et mauris mattis pretium ornare in odio.<p/>
+
+				<p>Suspendisse vitae mauris purus. Maecenas a laoreet lorem, in dignissim urna. Aenean viverra sagittis ultrices. Curabitur porta dui nec odio pulvinar varius. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In bibendum est at porta cursus. In sit amet auctor sapien. Donec elit purus, sollicitudin vitae turpis ac, consequat lobortis mi. Maecenas elementum volutpat sagittis. Integer justo lacus, tincidunt vitae odio sed, luctus feugiat mi. Morbi non ante magna.</p>
+				<div class="card-actions justify-end">
+				</div>
+			</div>
+		</div>
+		<div class="flex-initial card grow w-full max-w-[1200px] bg-base-200 shadow-xl">
+			<div class="card-body">
+				<h3 class="card-title text-sm">
+
+					<div class="avatar">
+						<div class="w-10 rounded-full">
+							<img alt="Avatar" src="/static/images/avatar.jpg" />
+						</div>
+					</div>
+					Username
+				</h3>
+
+				<h2 class="card-title">
+					Рецензия
+					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
+					<p class="text-base">8</p>
+				</h2>
+				<p>Suspendisse vitae mauris purus. Maecenas a laoreet lorem, in dignissim urna. Aenean viverra sagittis ultrices. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In bibendum est at porta cursus. In sit amet auctor sapien. Donec elit purus, sollicitudin vitae turpis ac, consequat lobortis mi. Maecenas elementum volutpat sagittis. Integer justo lacus, tincidunt vitae odio sed, luctus feugiat mi. Morbi non ante magna.</p>
+				<div class="card-actions justify-end">
+				</div>
+			</div>
+		</div>
+		<div class="flex-initial card grow w-full max-w-[1200px] bg-base-200 shadow-xl">
+			<div class="card-body">
+				<h3 class="card-title text-sm">
+
+					<div class="avatar">
+						<div class="w-10 rounded-full">
+							<img alt="Avatar" src="/static/images/avatar.jpg" />
+						</div>
+					</div>
+					Username
+				</h3>
+
+				<h2 class="card-title">
+					Рецензия
+					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
+					<p class="text-base">8</p>
+				</h2>
+				<p>Suspendisse vitae mauris purus.</p>
+				<div class="card-actions justify-end">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{{ template "footer" . }}
+
+{{ end }}

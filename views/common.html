@@ -1,0 +1,90 @@
+{{ block "header" . }}
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/static/css/daisyui.css" rel="stylesheet" type="text/css" />
+		<script src="/static/js/tailwind.js"></script>
+	</head>
+	<body>
+		<div class="header">
+			<div class="navbar bg-base-200">
+				<div class="flex-1 ml-5 mr-5">
+					<a href="/" class="btn btn-ghost text-xl">kinoDB</a>
+				</div>
+				<div class="flex-none dropdown dropdown-end mr-5">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+						<div class="w-10 rounded-full">
+							<img alt="Avatar" src="/static/images/avatar.jpg" />
+						</div>
+					</div>
+					<ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+						<li>
+							<a class="justify-between">
+								Profile
+								<span class="badge">New</span>
+							</a>
+						</li>
+						<li><a>Settings</a></li>
+						<li><a>Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+
+{{ end }}
+
+{{ block "search" . }}
+		<div>
+			<label class="mt-5 ml-10 mr-10 input input-bordered flex items-center">
+				<input type="text" class="grow" placeholder="Поиск..." />
+				<button class="btn btn-primary">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
+				</button>
+			</label>
+		</div>
+
+		<div class="flex flex-row flex-wrap mt-5 gap-x-4 ml-10">
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Тип контента</span>
+				</div>
+				<select class="select select-bordered">
+					<option>Всё</option>
+					<option>Фильмы</option>
+					<option>Сериалы</option>
+				<option>Мультсериалы</option>
+					<option>Полнометражные мультфильмы</option>
+				<option>Аниме сериалы</option>
+					<option>Полнометражные аниме</option>
+				</select>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Сортировать по</span>
+				</div>
+				<select class="select select-bordered">
+					<option>Рейтингу</option>
+					<option>Количеству оценок</option>
+				</select>
+			</label>
+
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Отфильтровать по жанрам</span>
+				</div>
+				<label class="input input-bordered flex items-center">
+					<input type="text" placeholder="Перечислите через запятую" />
+				</label>
+			</label>
+		</div>
+{{ end }}
+
+{{ block "footer" . }}
+		<div class="mt-20">
+		</div>
+	</body>
+</html>
+{{ end }}

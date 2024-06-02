@@ -25,11 +25,16 @@ func newTemplate() *Templates {
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Static("/static", "./static")
 
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(200, "index", nil)
+	})
+
+	e.GET("/title", func(c echo.Context) error {
+		return c.Render(200, "title", nil)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
