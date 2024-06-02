@@ -5,7 +5,7 @@
 <div class="mt-10">
 	<div class="flex flex-row flex-wrap gap-5 justify-center">
 		<div class="flex-none w-80">
-			<img src="/static/images/image1.jpg" class="rounded-lg shadow-2xl" />
+			<img src="/static/images/image{{ .Id }}.jpg" class="rounded-lg shadow-2xl" />
 			<div class="flex ml-4 gap-0.5 shrink rating py-3">
 				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
 				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
@@ -25,41 +25,54 @@
 			</div>
 		</div>
 		<div class="min-w-80 w-2/4">
-			<h1 class="text-5xl font-bold">Breaking Bad</h1>
-			<h2 class="text-2xl font-bold">Во все тяжкие</h2>
-		<h3 class="text-2xl py-1">Сериал</h3>
-			<h4 class="text-xl text-red-600">18+</h4>
+			<h1 class="text-5xl font-bold">{{ .Title }}</h1>
+			<h2 class="text-2xl font-bold">{{ .TranslatedTitle }}</h2>
+			<h3 class="text-2xl py-1">{{ .Type }}</h3>
+			<h4 class="text-xl text-red-600">{{ .AgeRating }}</h4>
 			<div class="overflow-x-auto">
 				<table class="table max-w-96">
 					<tbody>
 						<tr>
 							<td>Дата премьеры</td>
-							<td>20.01.2008</td>
+							<td>{{ .PremierDate.Format "02.01.2006" }}</td>
 						</tr>
 						<tr>
 							<td>Страна</td>
-							<td>США</td>
+							<td>{{ .Country }}</td>
 						</tr>
 						<tr>
 							<td>Жанр</td>
-							<td>криминал, драма, триллер</td>
+							<td>{{ .Genre }}</td>
 						</tr>
+
+						{{ if ne .NumberOfSeasons 0 }}
 						<tr>
 							<td>Количество сезонов</td>
-							<td>5</td>
+							<td>{{ .NumberOfSeasons }}</td>
 						</tr>
+						{{ end }}
+
+						{{ if ne .NumberOfEpisodes 0 }}
 						<tr>
 							<td>Количество эпизодов</td>
-							<td>62</td>
+							<td>{{ .NumberOfEpisodes }}</td>
 						</tr>
+						{{ end }}
+						{{ if ne .NumberOfSeasons 0 }}
+						<tr>
+							<td>Продолжительность серии</td>
+							<td>{{ .Duration }}</td>
+						</tr>
+						{{ else }}
 						<tr>
 							<td>Продолжительность</td>
-							<td>45 минут</td>
+							<td>{{ .Duration }}</td>
 						</tr>
+						{{ end }}
 					</tbody>
 				</table>
 			</div>
-			<p class="py-3">Школьный учитель химии Уолтер Уайт узнаёт, что болен раком лёгких. Учитывая сложное финансовое состояние дел семьи, а также перспективы, Уолтер решает заняться изготовлением метамфетамина. Для этого он привлекает своего бывшего ученика Джесси Пинкмана, когда-то исключённого из школы при активном содействии Уайта. Пинкман сам занимался варкой мета, но накануне, в ходе рейда УБН, он лишился подельника и лаборатории.</p>
+			<p class="py-3">{{ .Description }}</p>
 		</div>
 
 	</div>
