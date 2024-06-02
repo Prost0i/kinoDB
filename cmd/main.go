@@ -3,7 +3,9 @@ package main
 import (
 	"html/template"
 	"io"
+	"log"
 
+	"github.com/Prost0i/kinoDB/model"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -22,7 +24,15 @@ func newTemplate() *Templates {
 	}
 }
 
+type PageData struct {
+	Titles []model.Title
+}
+
 func main() {
+	if err := model.ConnectDB(); err != nil {
+		log.Fatal(err)
+	}
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Static("/static", "./static")
@@ -30,7 +40,12 @@ func main() {
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", nil)
+		titles, err := model.GetAllTitles()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return c.Render(200, "index", PageData{Titles: titles})
 	})
 
 	e.GET("/title", func(c echo.Context) error {

@@ -3,12 +3,13 @@
 {{ template "search" . }}
 
 <div class="flex flex-row flex-wrap gap-10 mt-10 ml-10">
-	<a href="/title" class="card card-compact w-64 bg-base-100 shadow-xl">
-		<figure><img src="/static/images/image1.jpg" alt="Poster"/></figure>
+	{{ range .Titles }}
+	<a href="/title/{{ .Id }}" class="card card-compact w-64 bg-base-100 shadow-xl">
+		<figure><img src="/static/images/image{{ .Id }}.jpg" alt="Poster"/></figure>
 		<div class="card-body">
-			<h2 class="card-title">Breaking Bad</h2>
-			<p class="font-bold">Во Все Тяжкие</p>
-			<p>Сериал</p>
+			<h2 class="card-title">{{ .Title }}</h2>
+			<p class="font-bold">{{ .TranslatedTitle }}</p>
+			<p>{{ .Type }} </p>
 			<div class="card-actions justify-end mr-2">
 				<div class="flex items-center gap-2">
 					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
@@ -18,67 +19,7 @@
 
 		</div>
 	</a>
-	<a href="/title" class="card card-compact w-64 bg-base-100 shadow-xl">
-		<figure><img src="/static/images/image2.jpg" alt="Poster"/></figure>
-		<div class="card-body">
-			<h2 class="card-title">Mushoku Tensei</h2>
-			<p class="font-bold">Реинкарнация безработного</p>
-			<p>Аниме сериал</p>
-			<div class="card-actions justify-end mr-2">
-				<div class="flex items-center gap-2">
-					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8.4</p>
-				</div>
-			</div>
-
-		</div>
-	</a>
-	<a href="/title" class="card card-compact w-64 bg-base-100 shadow-xl">
-		<figure><img src="/static/images/image3.jpg" alt="Poster"/></figure>
-		<div class="card-body">
-			<h2 class="card-title">Dune</h2>
-			<p class="font-bold">Дюна</p>
-			<p>Фильм</p>
-			<div class="card-actions justify-end mr-2">
-				<div class="flex items-center gap-2">
-					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8.0</p>
-				</div>
-			</div>
-
-		</div>
-	</a>
-
-	<a href="/title" class="card card-compact w-64 bg-base-100 shadow-xl">
-		<figure><img src="/static/images/image4.jpg" alt="Poster"/></figure>
-		<div class="card-body">
-			<h2 class="card-title">Neon Genesis Evangelion: The End of Evangelion</h2>
-			<p>Полнометражное аниме</p>
-			<div class="card-actions justify-end mr-2">
-				<div class="flex items-center gap-2">
-					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8.5</p>
-				</div>
-			</div>
-
-		</div>
-	</a>
-
-	<a href="/title" class="card card-compact w-64 bg-base-100 shadow-xl">
-		<figure><img src="/static/images/image5.jpg" alt="Poster"/></figure>
-		<div class="card-body">
-		<h2 class="card-title">South Park</h2>
-			<p class="font-bold">Южный Парк</p>
-			<p>Мультсериал</p>
-			<div class="card-actions justify-end mr-2">
-				<div class="flex items-center gap-2">
-					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8.7</p>
-				</div>
-			</div>
-
-		</div>
-	</a>
+	{{ end }}
 </div>
 
 {{ template "footer" . }}
