@@ -2,6 +2,7 @@
 
 {{ template "header" . }}
 
+{{ with .Title }}
 <div class="mt-10">
 	<div class="flex flex-row flex-wrap gap-5 justify-center">
 		<div class="flex-none w-80">
@@ -178,6 +179,7 @@
 		</div>
 	</div>
 </div>
+{{ end }}
 
 
 {{ template "footer" . }}

@@ -1,0 +1,68 @@
+{{ block "signup" . }}
+
+{{ template "header" . }}
+
+
+<div class="hero mt-10 bg-base-100">
+	<div class="hero-content flex-col lg:flex-row gap-10">
+		<div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-200">
+			<h1 class="text-2xl font-bold ml-5 mt-5">Вход</h1>
+			<form class="card-body" action="/signup" method="POST">
+				{{ range .LoginErrors }}
+				<p class="text-error">{{ . }}</p>
+				{{ end }}
+				<input type="hidden" name="action" value="login" />
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Email</span>
+					</label>
+					<input name="email" type="email" placeholder="" class="input input-bordered" required />
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Пароль</span>
+					</label>
+					<input name="password" type="password" placeholder="" class="input input-bordered" required />
+				</div>
+				<div class="form-control mt-6">
+					<button class="btn btn-primary">Вход</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-200">
+			<h1 class="text-2xl font-bold ml-5 mt-5">Регистрация</h1>
+			<form class="card-body" action="/signup" method="POST">
+				<input type="hidden" name="action" value="signup" />
+				{{ range .SignupErrors }}
+				<p class="text-error">{{ . }}</p>
+				{{ end }}
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Email</span>
+					</label>
+					<input name="email" type="email" hx-post="/signup/emailcheck" placeholder="" class="input input-bordered" required />
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Имя пользователя</span>
+					</label>
+					<input name="username" type="text" placeholder="" class="input input-bordered" required />
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Пароль</span>
+					</label>
+					<input name="password" type="password" placeholder="" class="input input-bordered" required />
+				</div>
+				<div class="form-control mt-6">
+					<button class="btn btn-primary">Регистрация</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+{{ template "footer" . }}
+
+{{ end }}
