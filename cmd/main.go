@@ -55,7 +55,7 @@ func main() {
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		user, isLogged, err := model.IsUserLoggedIn(c.Request())
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
 		if err != nil {
 			return c.String(500, err.Error())
 		}
@@ -69,7 +69,7 @@ func main() {
 	})
 
 	e.GET("/title/:id", func(c echo.Context) error {
-		user, isLogged, err := model.IsUserLoggedIn(c.Request())
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
 		if err != nil {
 			return c.String(500, err.Error())
 		}
@@ -110,7 +110,7 @@ func main() {
 	})
 
 	e.GET("/signup", func(c echo.Context) error {
-		_, isLogged, err := model.IsUserLoggedIn(c.Request())
+		_, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
 		if err != nil {
 			return c.String(500, err.Error())
 		}
@@ -123,7 +123,7 @@ func main() {
 	})
 
 	e.POST("/signup", func(c echo.Context) error {
-		_, isLogged, err := model.IsUserLoggedIn(c.Request())
+		_, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
 		if err != nil {
 			return c.String(500, err.Error())
 		}

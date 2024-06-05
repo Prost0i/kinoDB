@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -28,7 +29,7 @@ type User struct {
 	IsAdmin      bool   `db:"is_admin"`
 }
 
-func IsUserLoggedIn(r *http.Request) (User, bool, error) {
+func IsUserLoggedIn(r *http.Request, w http.ResponseWriter) (User, bool, error) {
 	session, err := store.Get(r, "user_session")
 	if err != nil {
 		return User{}, false, err
@@ -41,6 +42,12 @@ func IsUserLoggedIn(r *http.Request) (User, bool, error) {
 
 	user, err := GetUserById(userId.(uint64))
 	if err != nil {
+		if err == sql.ErrNoRows {
+			session.Options.MaxAge = -1
+			err := session.Save(r, w)
+			return User{}, false, err
+		}
+
 		return User{}, false, err
 	}
 
