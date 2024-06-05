@@ -45,7 +45,9 @@ func main() {
 	model.InitUserSessions([]byte("6da35044863f15376abb9b27aa1c65dd01dfc31f98f1730ec4cfcb7f06ff10ba"))
 
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status} error=${error}\n",
+	}))
 	e.Static("/static", "./static")
 
 	e.Renderer = newTemplate()
