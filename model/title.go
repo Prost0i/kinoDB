@@ -19,6 +19,10 @@ type Title struct {
 
 	NumberOfEpisodes int `db:"number_of_episodes"`
 	NumberOfSeasons  int `db:"number_of_seasons"`
+
+	RatingAvg     string `db:"rating_avg"`
+	RatingCnt     int    `db:"rating_cnt"`
+	RatingReviews int    `db:"rating_reviews"`
 }
 
 func (t *Title) ConvertDuration() {
@@ -50,13 +54,25 @@ func GetAllTitles() ([]Title, error) {
 		t.country,
 
 		COALESCE(t.number_of_episodes, 0) AS number_of_episodes,
-		COALESCE(t.number_of_seasons, 0) AS number_of_seasons
+		COALESCE(t.number_of_seasons, 0) AS number_of_seasons,
+
+		COALESCE(AVG(r.value), 0.0)::numeric(10, 1) as rating_avg,
+		COALESCE(COUNT(r), 0) as rating_cnt,
+		COALESCE(COUNT(r) FILTER (WHERE review IS NOT NULL), 0) AS rating_reviews
 	FROM
 		title AS t
 	LEFT JOIN
 		title_age_rating AS ar ON ar.id = t.age_rating
 	LEFT JOIN
 		title_type AS tt ON tt.type = t.type
+	LEFT OUTER JOIN
+		title_rating AS tr ON t.id = tr.title_id
+	LEFT OUTER JOIN
+		rating AS r ON r.id = tr.rating_id
+	GROUP BY
+		t.id,
+		tt.name,
+		ar.text
 	ORDER BY
 		t.id;
 	`
@@ -84,15 +100,29 @@ func GetTitleById(id uint64) (Title, error) {
 		t.country,
 
 		COALESCE(t.number_of_episodes, 0) AS number_of_episodes,
-		COALESCE(t.number_of_seasons, 0) AS number_of_seasons
+		COALESCE(t.number_of_seasons, 0) AS number_of_seasons,
+
+		COALESCE(AVG(r.value), 0)::numeric(10, 1) AS rating_avg,
+		COALESCE(COUNT(r), 0) AS rating_cnt,
+		COALESCE(COUNT(r) FILTER (WHERE review IS NOT NULL), 0) AS rating_reviews
 	FROM
 		title AS t
 	LEFT JOIN
 		title_age_rating AS ar ON ar.id = t.age_rating
 	LEFT JOIN
 		title_type AS tt ON tt.type = t.type
+	LEFT OUTER JOIN
+		title_rating AS tr ON t.id = tr.title_id
+	LEFT OUTER JOIN
+		rating AS r ON r.id = tr.rating_id
 	WHERE
 		t.id = $1
+	GROUP BY
+		t.id,
+		tt.name,
+		ar.text
+	ORDER BY
+		t.id;
 	`
 
 	if err := db.Get(&title, query, id); err != nil {

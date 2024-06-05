@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"math"
 	"net/mail"
 	"strconv"
 
@@ -33,6 +34,7 @@ type PageData struct {
 	Title               model.Title
 	SignupErrors        []string
 	LoginErrors         []string
+	RatingStars         [10]bool
 }
 
 func main() {
@@ -84,8 +86,18 @@ func main() {
 		}
 
 		title.ConvertDuration()
+		ratingStarsF, err := strconv.ParseFloat(title.RatingAvg, 32)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
 
-		return c.Render(200, "title", PageData{Title: title, User: user, IsUserAuthenticated: isLogged})
+		ratingStars := [10]bool{}
+		ratingStarsNum := int(math.Round(ratingStarsF)) - 1
+		if ratingStarsNum > 0 {
+			ratingStars[ratingStarsNum] = true
+		}
+
+		return c.Render(200, "title", PageData{Title: title, User: user, IsUserAuthenticated: isLogged, RatingStars: ratingStars})
 	})
 
 	e.GET("/logout", func(c echo.Context) error {

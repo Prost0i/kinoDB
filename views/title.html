@@ -2,78 +2,84 @@
 
 {{ template "header" . }}
 
-{{ with .Title }}
 <div class="mt-10">
 	<div class="flex flex-row flex-wrap gap-5 justify-center">
 		<div class="flex-none w-80">
-			<img src="/static/images/image{{ .Id }}.jpg" class="rounded-lg shadow-2xl" />
+			<img src="/static/images/image{{ .Title.Id }}.jpg" class="rounded-lg shadow-2xl" />
 			<div class="flex ml-4 gap-0.5 shrink rating py-3">
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" disabled />
-				<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" checked disabled />
-				<p class="ml-2 text-lg">9.5</p>
+				{{ if ne .Title.RatingAvg "0.0" }}
+					{{ range .RatingStars }}
+						{{ if . }}
+						<input type="radio" name="title-rating-avg" class="mask mask-star-2 bg-orange-400" checked disabled />
+						{{ else }}
+						<input type="radio" name="title-rating-avg" class="mask mask-star-2 bg-orange-400" disabled/>
+						{{ end }}
+					{{ end }}
+				{{ else }}
+					<input type="radio" name="title-rating-avg" class="mask mask-star-2 bg-orange-400" checked disabled />
+				{{ end }}
+				<p class="ml-2 text-lg">
+					{{ if eq .Title.RatingAvg "0.0" }}
+					N/A
+					{{ else }}
+					{{ .Title.RatingAvg }}
+					{{ end }}
+				</p>
 			</div>
 			<div class="ml-4">
-				<p>Оценок: 10</p>
-				<p>Рецензий: 3</p>
+				<p>Оценок: {{ .Title.RatingCnt }}</p>
+				<p>Рецензий: {{ .Title.RatingReviews }}</p>
 			</div>
 		</div>
 		<div class="min-w-80 w-2/4">
-			<h1 class="text-5xl font-bold">{{ .Title }}</h1>
-			<h2 class="text-2xl font-bold">{{ .TranslatedTitle }}</h2>
-			<h3 class="text-2xl py-1">{{ .Type }}</h3>
-			<h4 class="text-xl text-red-600">{{ .AgeRating }}</h4>
+			<h1 class="text-5xl font-bold">{{ .Title.Title }}</h1>
+			<h2 class="text-2xl font-bold">{{ .Title.TranslatedTitle }}</h2>
+			<h3 class="text-2xl py-1">{{ .Title.Type }}</h3>
+			<h4 class="text-xl text-red-600">{{ .Title.AgeRating }}</h4>
 			<div class="overflow-x-auto">
 				<table class="table max-w-96">
 					<tbody>
 						<tr>
 							<td>Дата премьеры</td>
-							<td>{{ .PremierDate.Format "02.01.2006" }}</td>
+							<td>{{ .Title.PremierDate.Format "02.01.2006" }}</td>
 						</tr>
 						<tr>
 							<td>Страна</td>
-							<td>{{ .Country }}</td>
+							<td>{{ .Title.Country }}</td>
 						</tr>
 						<tr>
 							<td>Жанр</td>
-							<td>{{ .Genre }}</td>
+							<td>{{ .Title.Genre }}</td>
 						</tr>
 
-						{{ if ne .NumberOfSeasons 0 }}
+						{{ if ne .Title.NumberOfSeasons 0 }}
 						<tr>
 							<td>Количество сезонов</td>
-							<td>{{ .NumberOfSeasons }}</td>
+							<td>{{ .Title.NumberOfSeasons }}</td>
 						</tr>
 						{{ end }}
 
-						{{ if ne .NumberOfEpisodes 0 }}
+						{{ if ne .Title.NumberOfEpisodes 0 }}
 						<tr>
 							<td>Количество эпизодов</td>
-							<td>{{ .NumberOfEpisodes }}</td>
+							<td>{{ .Title.NumberOfEpisodes }}</td>
 						</tr>
 						{{ end }}
-						{{ if ne .NumberOfSeasons 0 }}
+						{{ if ne .Title.NumberOfSeasons 0 }}
 						<tr>
 							<td>Продолжительность серии</td>
-							<td>{{ .Duration }}</td>
+							<td>{{ .Title.Duration }}</td>
 						</tr>
 						{{ else }}
 						<tr>
 							<td>Продолжительность</td>
-							<td>{{ .Duration }}</td>
+							<td>{{ .Title.Duration }}</td>
 						</tr>
 						{{ end }}
 					</tbody>
 				</table>
 			</div>
-			<p class="py-3">{{ .Description }}</p>
+			<p class="py-3">{{ .Title.Description }}</p>
 		</div>
 
 	</div>
@@ -179,7 +185,6 @@
 		</div>
 	</div>
 </div>
-{{ end }}
 
 
 {{ template "footer" . }}
