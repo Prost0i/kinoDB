@@ -3,40 +3,25 @@
 SELECT 'up SQL query';
 -- +goose StatementEnd
 
-CREATE TABLE rating(
+CREATE TABLE review_rating(
 	id BIGSERIAL PRIMARY KEY,
 	value INT NOT NULL CHECK (value >= 1 AND value <= 10),
-	site_user_id SERIAL NOT NULL REFERENCES site_user,
-	review TEXT
+	title_id SERIAL NOT NULL REFERENCES title ON DELETE CASCADE,
+	site_user_id SERIAL NOT NULL REFERENCES site_user ON DELETE CASCADE,
+	review_title VARCHAR(500) DEFAULT NULL,
+	review TEXT DEFAULT NULL
 );
 
-CREATE TABLE title_rating(
-	title_id SERIAL NOT NULL REFERENCES title,
-	rating_id SERIAL NOT NULL UNIQUE REFERENCES rating
+CREATE TABLE title_review_rating(
+	title_id SERIAL NOT NULL REFERENCES title ON DELETE CASCADE,
+	review_rating_id SERIAL NOT NULL UNIQUE REFERENCES review_rating ON DELETE CASCADE
 );
-
-INSERT INTO site_user
-	VALUES (228, 'example', 'example@example.com', 'no_password_no_hash');
-
-INSERT INTO rating 
-	VALUES
-	(1, 7, 228, NULL),
-	(2, 10, 228, 'This is my review'),
-	(3, 7, 228, 'Another review');
-
-INSERT INTO title_rating
-	VALUES
-	(1, 1),
-	(1, 2),
-	(2, 3);
-
-
 
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query';
 -- +goose StatementEnd
 
-DROP TABLE IF EXISTS title_rating;
-DROP TABLE IF EXISTS rating;
+DROP TABLE IF EXISTS title_review_rating;
+DROP TABLE IF EXISTS review_rating;
 DELETE FROM site_user WHERE id = 228;

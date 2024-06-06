@@ -35,6 +35,8 @@ type PageData struct {
 	SignupErrors        []string
 	LoginErrors         []string
 	RatingStars         [10]bool
+	Reviews             []model.ReviewRating
+	Review              *model.ReviewRating
 }
 
 func main() {
@@ -93,11 +95,160 @@ func main() {
 
 		ratingStars := [10]bool{}
 		ratingStarsNum := int(math.Round(ratingStarsF)) - 1
-		if ratingStarsNum > 0 {
+		if ratingStarsNum >= 0 {
 			ratingStars[ratingStarsNum] = true
 		}
 
-		return c.Render(200, "title", PageData{Title: title, User: user, IsUserAuthenticated: isLogged, RatingStars: ratingStars})
+		reviews, err := model.GetAllReviewsForTitleByTitleId(title.Id)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		var reviewPtr *model.ReviewRating
+		found, review, err := model.GetReviewRatingByUserId(uint64(titleId), user.Id)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if !found {
+			reviewPtr = nil
+		} else {
+			reviewPtr = &review
+		}
+
+		return c.Render(200, "title", PageData{Title: title, User: user, IsUserAuthenticated: isLogged, RatingStars: ratingStars, Reviews: reviews, Review: reviewPtr})
+	})
+
+	e.POST("/title/:id", func(c echo.Context) error {
+		titleIdStr := c.Param("id")
+		titleId, err := strconv.Atoi(titleIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if !isLogged {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		ratingStr := c.FormValue("rating")
+		review_title := c.FormValue("review_title")
+		review := c.FormValue("review")
+
+		rating, err := strconv.Atoi(ratingStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if review_title == "" && review == "" {
+			_, err := model.InsertOnlyRating(rating, uint64(titleId), user.Id)
+			if err != nil {
+				c.String(500, err.Error())
+			}
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		if (review_title == "" && review != "") ||
+			(review_title != "" && review == "") {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		_, err = model.InsertReview(rating, review_title, review, uint64(titleId), user.Id)
+		if err != nil {
+			log.Println(err)
+			return c.String(500, err.Error())
+		}
+
+		return c.Redirect(302, "/title/"+titleIdStr)
+	})
+
+	e.POST("/title/:id/review_change", func(c echo.Context) error {
+		titleIdStr := c.Param("id")
+		titleId, err := strconv.Atoi(titleIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if !isLogged {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		found, _, err := model.GetReviewRatingByUserId(uint64(titleId), user.Id)
+
+		if !found {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		ratingStr := c.FormValue("rating")
+		review_title := c.FormValue("review_title")
+		review := c.FormValue("review")
+
+		rating, err := strconv.Atoi(ratingStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if review_title == "" && review == "" {
+			_, err := model.UpdateReviewRating(rating, "", "", uint64(titleId), user.Id)
+			if err != nil {
+				c.String(500, err.Error())
+			}
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		if (review_title == "" && review != "") ||
+			(review_title != "" && review == "") {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		_, err = model.UpdateReviewRating(rating, review_title, review, uint64(titleId), user.Id)
+		if err != nil {
+			log.Println(err)
+			return c.String(500, err.Error())
+		}
+
+		return c.Redirect(302, "/title/"+titleIdStr)
+	})
+
+	e.POST("/title/:id/review_delete", func(c echo.Context) error {
+		titleIdStr := c.Param("id")
+		titleId, err := strconv.Atoi(titleIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if !isLogged {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		found, _, err := model.GetReviewRatingByUserId(uint64(titleId), user.Id)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if !found {
+			return c.Redirect(302, "/title/"+titleIdStr)
+		}
+
+		if err := model.DeleteReviewRating(uint64(titleId), user.Id); err != nil {
+			return c.String(500, err.Error())
+		}
+
+		return c.Redirect(302, "/title/"+titleIdStr)
 	})
 
 	e.GET("/logout", func(c echo.Context) error {

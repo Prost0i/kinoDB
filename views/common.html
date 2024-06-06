@@ -90,5 +90,39 @@
 		<div class="mt-20">
 		</div>
 	</body>
+	{{ template "rating_script" . }}
 </html>
+
+{{ end }}
+{{ block "rating_script" . }}
+<script>
+{{ if .Review }}
+document.reviewRating.rating[{{ .Review.Value }} - 1 ].checked = true
+{{ end }}
+
+var formRating = document.getElementById('form-review-rating')
+if (formRating != null) {
+	var stars = formRating.rating
+	for (var i = 0; i < stars.length; i++) {
+		stars[i].addEventListener('change', function() {
+			document.getElementById('rating-number').textContent = this.value
+		});
+	}
+}
+
+function validateReviewForm() {
+	let reviewTitle = formRating["review_title"].value.trim()
+	let review = formRating["review"].value.trim()
+
+	if ((reviewTitle == "" && review != "") ||
+            (review == "" && reviewTitle != "")) {
+		let formValidationError = document.getElementById("form-validation-error")
+		formValidationError.removeAttribute("hidden")
+
+		return false
+	}
+
+	return true
+}
+</script>
 {{ end }}

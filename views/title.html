@@ -86,26 +86,70 @@
 
 	<div class="flex flex-col justify-center items-center gap-5 ml-5 mr-5 pt-10">
 		<div class="w-full max-w-[1200px]">
-			<div class="flex flex-row flex-wrap shrink rating">
-				<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
-					<p class="mr-4">Оставить оценку</p>
+			{{ if .IsUserAuthenticated }}
+			{{ if not .Review }}
+			<form id="form-review-rating" name="reviewRating" action="/title/{{ .Title.Id }}" method="POST" onsubmit="return validateReviewForm()">
+				<div class="flex flex-row flex-wrap shrink rating">
+					<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+						<p class="mr-4">Поставить оценку</p>
+					</div>
+
+					<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+						<input type="radio" value="1" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="2" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="3" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="4" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="5" name="rating" class="mask mask-star-2 bg-orange-400" checked/>
+						<input type="radio" value="6" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="7" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="8" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="9" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="10" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<p id="rating-number" class="ml-2 text-lg">5</p>
+					</div>
 				</div>
-				<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" checked/>
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<input type="radio" name="title-rating" class="mask mask-star-2 bg-orange-400" />
-					<p class="ml-2 text-lg">1</p>
+				<p hidden id="form-validation-error"class="mb-4 text-error">Одно из полей осталось пустым</p>
+				<input name="review_title" type="text" placeholder="Заголовок рецензии" class="input input-bordered w-full max-w-xs" />
+				<textarea name="review" class="textarea textarea-bordered min-h-[200px] w-full max-w-[1200px] mt-5" placeholder="Оставить рецензию...&#10;Если хотите просто поставить оценку, оставьте заголовок рецензии и это поле пустыми"></textarea>
+				<button class="justify-self-end btn btn-outline mt-5">Отправить</button>
+			</form>
+			{{ else }}
+			<form id="form-review-rating" name="reviewRating" action="/title/{{ .Title.Id }}/review_change" method="POST" onsubmit="return validateReviewForm()">
+				<div class="flex flex-row flex-wrap shrink rating">
+					<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+						<p class="mr-4">Поставить оценку</p>
+					</div>
+					<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+						<input type="radio" value="1" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="2" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="3" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="4" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="5" name="rating" class="mask mask-star-2 bg-orange-400" checked/>
+						<input type="radio" value="6" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="7" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="8" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="9" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<input type="radio" value="10" name="rating" class="mask mask-star-2 bg-orange-400" />
+						<p id="rating-number" class="ml-2 text-lg">{{ .Review.Value }}</p>
+					</div>
 				</div>
-			</div>
-			<textarea class="textarea textarea-bordered min-h-[200px] w-full max-w-[1200px]" placeholder="Оставить рецензию...&#10;Если хотите просто поставить оценку, оставьте это поле пустым"></textarea>
-			<button class="justify-self-end btn btn-outline mt-5">Отправить</button>
+				<p hidden id="form-validation-error"class="mb-4 text-error">Одно из полей осталось пустым</p>
+				<input name="review_title" type="text" value="{{ .Review.ReviewTitle }}" placeholder="Заголовок рецензии" class="input input-bordered w-full max-w-xs" />
+				<textarea name="review" class="textarea textarea-bordered min-h-[200px] w-full max-w-[1200px] mt-5" placeholder="Оставить рецензию...&#10;Если хотите просто поставить оценку, оставьте заголовок рецензии и это поле пустыми">{{ .Review.Review }}</textarea>
+				<button class="justify-self-end btn btn-outline mt-5">Изменить</button>
+			</form>
+			<form action="/title/{{ .Title.Id }}/review_delete" method="POST">
+				<button class="justify-self-end btn btn-outline btn-error mt-5">Удалить</button>
+			</form>
+			{{ end }}
+			{{ else }}
+				<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating py-3">
+					<p class="mr-4">Чтобы поставить оценку или написать рецензию нужно войти или зарегестрироваться</p>
+				</div>
+				<div class="flex flex-row flex-wrap ml-4 gap-0.5 shrink rating">
+					<a class="btn btn-outline" href="/signup">Вход/Регистрация</a>
+				</div>
+			{{ end }}
 		</div>
 	</div>
 	<div class="flex w-full max-w-[1200px] justify-end">
@@ -113,6 +157,7 @@
 
 
 	<div class="flex flex-col justify-center items-center gap-5 ml-5 mr-5 pt-10">
+		{{ range .Reviews }}
 		<div class="flex-initial card grow w-full max-w-[1200px] bg-base-200 shadow-xl">
 			<div class="card-body">
 				<h3 class="card-title text-sm">
@@ -122,67 +167,25 @@
 							<img alt="Avatar" src="/static/images/avatar.jpg" />
 						</div>
 					</div>
-					Username
+					{{ .Username }}
 				</h3>
 
 				<h2 class="card-title">
-					Рецензия
+					{{ .ReviewTitle }}
 					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8</p>
+					<p class="text-base">{{ .Value }}</p>
 				</h2>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ligula arcu, blandit sed massa sit amet, fringilla egestas mauris. Ut pretium egestas orci in mollis. Ut eu ipsum sed erat rutrum accumsan. Fusce molestie arcu mauris, id luctus elit accumsan laoreet. Etiam semper massa sed sagittis auctor. Duis ac nunc eros. Etiam quis pharetra ipsum. Cras sapien sem, interdum et nibh at, dictum pellentesque dui. Aliquam pharetra odio sit amet tortor lacinia, ac luctus nulla dictum. Donec vitae ipsum consectetur, tempus augue et, consequat libero. Aliquam sollicitudin tempor consequat. Morbi sit amet augue velit. Proin id auctor erat. Sed varius eu lorem ac auctor. Maecenas a viverra arcu. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
-
-				<p>Nam in mi libero. Pellentesque blandit purus et nunc tempor congue. Pellentesque eleifend accumsan sagittis. Fusce sodales nunc sit amet ornare dictum. Ut sit amet porta orci, et suscipit enim. Duis sollicitudin metus nec est viverra tristique. Morbi varius, mi nec accumsan fermentum, ligula massa iaculis tortor, vitae consectetur nulla nisi nec tellus. Proin nec velit in diam facilisis tincidunt. Nulla non egestas enim. Suspendisse id tellus et mauris mattis pretium ornare in odio.<p/>
-
-				<p>Suspendisse vitae mauris purus. Maecenas a laoreet lorem, in dignissim urna. Aenean viverra sagittis ultrices. Curabitur porta dui nec odio pulvinar varius. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In bibendum est at porta cursus. In sit amet auctor sapien. Donec elit purus, sollicitudin vitae turpis ac, consequat lobortis mi. Maecenas elementum volutpat sagittis. Integer justo lacus, tincidunt vitae odio sed, luctus feugiat mi. Morbi non ante magna.</p>
+				{{ .Review }}
 				<div class="card-actions justify-end">
 				</div>
 			</div>
 		</div>
-		<div class="flex-initial card grow w-full max-w-[1200px] bg-base-200 shadow-xl">
-			<div class="card-body">
-				<h3 class="card-title text-sm">
-
-					<div class="avatar">
-						<div class="w-10 rounded-full">
-							<img alt="Avatar" src="/static/images/avatar.jpg" />
-						</div>
-					</div>
-					Username
-				</h3>
-
-				<h2 class="card-title">
-					Рецензия
-					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8</p>
-				</h2>
-				<p>Suspendisse vitae mauris purus. Maecenas a laoreet lorem, in dignissim urna. Aenean viverra sagittis ultrices. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In bibendum est at porta cursus. In sit amet auctor sapien. Donec elit purus, sollicitudin vitae turpis ac, consequat lobortis mi. Maecenas elementum volutpat sagittis. Integer justo lacus, tincidunt vitae odio sed, luctus feugiat mi. Morbi non ante magna.</p>
-				<div class="card-actions justify-end">
-				</div>
-			</div>
+		{{ else }}
+		<div class="flex-initial grow w-full max-w-[1200px] justify-center">
+			Пока рецензий нет.
 		</div>
-		<div class="flex-initial card grow w-full max-w-[1200px] bg-base-200 shadow-xl">
-			<div class="card-body">
-				<h3 class="card-title text-sm">
 
-					<div class="avatar">
-						<div class="w-10 rounded-full">
-							<img alt="Avatar" src="/static/images/avatar.jpg" />
-						</div>
-					</div>
-					Username
-				</h3>
-
-				<h2 class="card-title">
-					Рецензия
-					<div class="mask mask-star-2 bg-orange-400 w-6 h-6"></div>
-					<p class="text-base">8</p>
-				</h2>
-				<p>Suspendisse vitae mauris purus.</p>
-				<div class="card-actions justify-end">
-				</div>
-			</div>
-		</div>
+		{{ end }}
 	</div>
 </div>
 

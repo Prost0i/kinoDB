@@ -66,9 +66,7 @@ func GetAllTitles() ([]Title, error) {
 	LEFT JOIN
 		title_type AS tt ON tt.type = t.type
 	LEFT OUTER JOIN
-		title_rating AS tr ON t.id = tr.title_id
-	LEFT OUTER JOIN
-		rating AS r ON r.id = tr.rating_id
+		review_rating AS r ON r.title_id = t.id
 	GROUP BY
 		t.id,
 		tt.name,
@@ -112,9 +110,7 @@ func GetTitleById(id uint64) (Title, error) {
 	LEFT JOIN
 		title_type AS tt ON tt.type = t.type
 	LEFT OUTER JOIN
-		title_rating AS tr ON t.id = tr.title_id
-	LEFT OUTER JOIN
-		rating AS r ON r.id = tr.rating_id
+		review_rating AS r ON r.title_id = t.id
 	WHERE
 		t.id = $1
 	GROUP BY
