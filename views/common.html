@@ -15,6 +15,15 @@
 				</div>
 				{{ if .IsUserAuthenticated }}
 				{{ with .User }}
+				{{ if .IsAdmin }}
+				<div class="flex-none mr-5">
+					<a href="/admin/titles" class="btn btn-info">Панель администратора</a>
+				</div>
+				<div class="flex-none mr-5">
+					<a href="/admin/create_title" class="btn btn-info">Добавить запись</a>
+				</div>
+				{{ end }}
+
 				<div class="flex-none dropdown dropdown-end mr-5">
 					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
 						<div class="w-10 rounded-full">
@@ -101,6 +110,16 @@
 <script>
 {{ if .Review }}
 document.reviewRating.rating[{{ .Review.Value }} - 1 ].checked = true
+{{ end }}
+
+{{ if ne .Title.Id 0}}
+
+var formTitle = document.getElementById('form-title')
+if (formTitle != null) {
+	formTitle.type_char.value = {{ .Title.TypeChar }}
+	formTitle.age_rating.value = "{{ .Title.AgeRatingId }}"
+}
+
 {{ end }}
 
 var formSearch = document.getElementById('form-search')

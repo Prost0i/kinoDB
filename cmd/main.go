@@ -5,7 +5,9 @@ import (
 	"io"
 	"log"
 	"math"
+	"net/http"
 	"net/mail"
+	"os"
 	"strconv"
 
 	"github.com/Prost0i/kinoDB/model"
@@ -345,6 +347,210 @@ func main() {
 		}
 
 		return c.String(500, "500")
+	})
+
+	adminGroup := e.Group("/admin")
+	adminGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+			if err != nil {
+				return c.String(500, err.Error())
+			}
+
+			if isLogged && user.IsAdmin {
+				return next(c)
+			}
+			return c.Redirect(302, "/")
+		}
+	})
+
+	adminGroup.GET("/titles", func(c echo.Context) error {
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		titles, err := model.GetAllTitles()
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		return c.Render(200, "admin_titles", PageData{User: user, IsUserAuthenticated: isLogged, Titles: titles})
+	})
+
+	adminGroup.GET("/titles/:id", func(c echo.Context) error {
+		titleIdStr := c.Param("id")
+		titleId, err := strconv.Atoi(titleIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		title, err := model.GetTitleById(uint64(titleId))
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		return c.Render(200, "admin_title_form", PageData{User: user, IsUserAuthenticated: isLogged, Title: title})
+	})
+
+	adminGroup.POST("/titles/:id", func(c echo.Context) error {
+		titleIdStr := c.Param("id")
+		titleId, err := strconv.Atoi(titleIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		titleTitle := c.FormValue("title")
+		translatedTitle := c.FormValue("translated_title")
+		typeChar := c.FormValue("type_char")
+		genre := c.FormValue("genre")
+		ageRatingIdStr := c.FormValue("age_rating")
+		ageRatingId, err := strconv.Atoi(ageRatingIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+		country := c.FormValue("country")
+		description := c.FormValue("description")
+		premierDate := c.FormValue("premier_date")
+		duration := c.FormValue("duration")
+		numberOfEpisodesStr := c.FormValue("number_of_episodes")
+		numberOfSeasonsStr := c.FormValue("number_of_seasons")
+
+		numberOfEpisodes, err := strconv.Atoi(numberOfEpisodesStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		numberOfSeasons, err := strconv.Atoi(numberOfSeasonsStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		_, err = model.UpdateTitle(uint64(titleId), titleTitle, translatedTitle, typeChar, genre, uint64(ageRatingId), country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		posterUploaded := true
+		poster, err := c.FormFile("poster")
+		switch err {
+		case nil:
+			// do nothing
+		case http.ErrMissingFile:
+			posterUploaded = false
+		default:
+			return c.String(500, err.Error())
+		}
+
+		if posterUploaded {
+			posterSrc, err := poster.Open()
+			if err != nil {
+				return c.String(500, err.Error())
+			}
+			defer posterSrc.Close()
+
+			posterDst, err := os.Create("./static/images/image" + strconv.Itoa(int(titleId)) + ".jpg")
+			defer posterDst.Close()
+
+			if _, err := io.Copy(posterDst, posterSrc); err != nil {
+				return c.String(500, err.Error())
+			}
+		}
+
+		return c.Redirect(302, "/admin/titles/"+titleIdStr)
+
+	})
+
+	adminGroup.POST("/titles/:id/delete", func(c echo.Context) error {
+		titleIdStr := c.Param("id")
+		titleId, err := strconv.Atoi(titleIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		if err := model.DeleteTitle(uint64(titleId)); err != nil {
+			return c.String(500, err.Error())
+		}
+
+		os.Remove("./static/images/image" + titleIdStr + ".jpg")
+
+		return c.Redirect(302, "/admin/titles")
+
+	})
+	adminGroup.GET("/create_title", func(c echo.Context) error {
+		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		return c.Render(200, "admin_title_form", PageData{User: user, IsUserAuthenticated: isLogged})
+	})
+
+	adminGroup.POST("/create_title", func(c echo.Context) error {
+		titleTitle := c.FormValue("title")
+		translatedTitle := c.FormValue("translated_title")
+		typeChar := c.FormValue("type_char")
+		genre := c.FormValue("genre")
+		ageRatingIdStr := c.FormValue("age_rating")
+		ageRatingId, err := strconv.Atoi(ageRatingIdStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+		country := c.FormValue("country")
+		description := c.FormValue("description")
+		premierDate := c.FormValue("premier_date")
+		duration := c.FormValue("duration")
+		numberOfEpisodesStr := c.FormValue("number_of_episodes")
+		numberOfSeasonsStr := c.FormValue("number_of_seasons")
+
+		numberOfEpisodes, err := strconv.Atoi(numberOfEpisodesStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		numberOfSeasons, err := strconv.Atoi(numberOfSeasonsStr)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		titleId, err := model.InsertTitle(titleTitle, translatedTitle, typeChar, genre, uint64(ageRatingId), country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
+
+		posterUploaded := true
+		poster, err := c.FormFile("poster")
+		switch err {
+		case nil:
+			// do nothing
+		case http.ErrMissingFile:
+			posterUploaded = false
+		default:
+			return c.String(500, err.Error())
+		}
+
+		if posterUploaded {
+			posterSrc, err := poster.Open()
+			if err != nil {
+				return c.String(500, err.Error())
+			}
+			defer posterSrc.Close()
+
+			posterDst, err := os.Create("./static/images/image" + strconv.Itoa(int(titleId)) + ".jpg")
+			defer posterDst.Close()
+
+			if _, err := io.Copy(posterDst, posterSrc); err != nil {
+				return c.String(500, err.Error())
+			}
+		}
+
+		return c.Redirect(302, "/admin/titles/"+strconv.Itoa(int(titleId)))
+
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))

@@ -1,0 +1,76 @@
+{{ block "admin_title_form" . }}
+{{ template "header" . }}
+
+<div class="flex flex-col justify-center items-center gap-5 ml-5 mr-5 pt-10">
+	<div class="w-full max-w-[1200px]">
+		{{ if eq .Title.Id 0 }}
+		<form id="form-title" action="/admin/create_title" method="POST" enctype="multipart/form-data">
+		{{ else }}
+		<form id="form-title" action="/admin/titles/{{ .Title.Id }}" method="POST" enctype="multipart/form-data">
+		{{ end }}
+			<div>
+				<div class="m-5">Постер</div>
+				<input type="file" name="poster" class="file-input file-input-bordered w-full max-w-xs" accept="image/jpeg" />
+
+				<div class="m-5">Название</div>
+				<input type="text" name="title" value="{{ .Title.Title }}" class="input input-bordered w-full max-w-ws" required></input>
+				<div class="m-5">Переведенное название</div>
+				<input type="text" name="translated_title" value="{{ .Title.TranslatedTitle }}" class="input input-bordered w-full max-w-ws" required></input>
+
+				<div class="m-5">Тип</div>
+				<select name="type_char" class="select select-bordered">
+					<option value="a">Фильм</option>
+					<option value="d">Сериал</option>
+					<option value="f">Мультсериал</option>
+					<option value="c">Полнометражный  мультфильм</option>
+					<option value="e">Аниме сериал</option>
+					<option value="b">Полнометражное аниме</option>
+				</select>
+
+
+				<div class="m-5">Дата премьеры</div>
+				{{ if eq .Title.Id 0 }}
+				<input type="date" name="premier_date" class="input input-bordered" required></input>
+				{{ else }}
+				<input type="date" name="premier_date" class="input input-bordered" value="{{ .Title.PremierDate.Format "2006-01-02" }}" required></input>
+				{{ end }}
+
+				<div class="m-5">Жанры (через запятую)</div>
+				<input type="text" name="genre" value="{{ .Title.Genre }}" class="input input-bordered w-full max-w-ws" required></input>
+
+				<div class="m-5">Возрастной рейтинг</div>
+				<select name="age_rating" class="select select-bordered">
+					<option value="1">0+</option>
+					<option value="2">6+</option>
+					<option value="3">12+</option>
+					<option value="4">16+</option>
+					<option value="5">18+</option>
+				</select>
+
+				<div class="m-5">Продолжительность</div>
+				<input type="time" name="duration" step="1" value="{{ .Title.Duration }}" class="input input-bordered" required></input>
+
+				<div class="m-5">Страна</div>
+				<input type="text" name="country" value="{{ .Title.Country }}" class="input input-bordered w-full max-w-ws" required></input>
+
+				<div class="m-5">Количество серий</div>
+				<input class="input input-bordered" type="number" name="number_of_episodes" value="{{ .Title.NumberOfEpisodes }}"></input>
+
+				<div class="m-5">Количество сезонов</div>
+				<input class="input input-bordered" type="number" name="number_of_seasons" value="{{ .Title.NumberOfSeasons }}"></input>
+
+				<div class="m-5">Описание</div>
+					<textarea name="description" class="textarea textarea-bordered min-h-[200px] w-full max-w-[1200px]" required>{{ .Title.Description }}</textarea>
+
+				{{ if eq .Title.Id 0 }}
+				<button class="mt-5 btn btn-outline" type="submit">Создать</button>
+				{{ else }}
+				<button class="mt-5 btn btn-outline" type="submit">Изменить</button>
+				{{ end }}
+			</div>
+		</form>
+	</div>
+</div>
+
+{{ template "footer" . }}
+{{ end }}

@@ -68,12 +68,12 @@
 						{{ if ne .Title.NumberOfSeasons 0 }}
 						<tr>
 							<td>Продолжительность серии</td>
-							<td>{{ .Title.Duration }}</td>
+							<td>{{ .Title.DurationFormatted }}</td>
 						</tr>
 						{{ else }}
 						<tr>
 							<td>Продолжительность</td>
-							<td>{{ .Title.Duration }}</td>
+							<td>{{ .Title.DurationFormatted }}</td>
 						</tr>
 						{{ end }}
 					</tbody>

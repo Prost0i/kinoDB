@@ -9,10 +9,12 @@ import (
 type Title struct {
 	Id              uint64    `db:"id"`
 	Type            string    `db:"type"`
+	TypeChar        string    `db:"type_char"`
 	Title           string    `db:"title"`
 	TranslatedTitle string    `db:"translated_title"`
 	PremierDate     time.Time `db:"premier_date"`
 	Genre           string    `db:"genre"`
+	AgeRatingId     uint64    `db:"age_rating_id"`
 	AgeRating       string    `db:"age_rating"`
 	Duration        string    `db:"duration"`
 	Description     string    `db:"description"`
@@ -24,6 +26,8 @@ type Title struct {
 	RatingAvg     string `db:"rating_avg"`
 	RatingCnt     int    `db:"rating_cnt"`
 	RatingReviews int    `db:"rating_reviews"`
+
+	DurationFormatted string
 }
 
 func (t *Title) ConvertDuration() {
@@ -36,7 +40,7 @@ func (t *Title) ConvertDuration() {
 		}
 	}
 
-	t.Duration = strings.TrimSpace(durationStr)
+	t.DurationFormatted = strings.TrimSpace(durationStr)
 }
 
 func GetAllTitles() ([]Title, error) {
@@ -45,17 +49,19 @@ func GetAllTitles() ([]Title, error) {
 	query := `SELECT
 		t.id,
 		tt.name AS type,
+		t.type AS type_char,
 		t.title,
 		t.translated_title,
 		t.premier_date,
 		t.genre,
+		t.age_rating AS age_rating_id,
 		ar.text AS age_rating,
 		t.duration,
 		t.description,
 		t.country,
 
-		COALESCE(t.number_of_episodes, 0) AS number_of_episodes,
-		COALESCE(t.number_of_seasons, 0) AS number_of_seasons,
+		t.number_of_episodes AS number_of_episodes,
+		t.number_of_seasons AS number_of_seasons,
 
 		COALESCE(AVG(r.value), 0.0)::numeric(10, 1) as rating_avg,
 		COALESCE(COUNT(r), 0) as rating_cnt,
@@ -91,10 +97,12 @@ func FilterTitles(title, genre, typeChar, orderBy string) ([]Title, error) {
 		`SELECT
 		t.id,
 		tt.name AS type,
+		t.type AS type_char,
 		t.title,
 		t.translated_title,
 		t.premier_date,
 		t.genre,
+		t.age_rating AS age_rating_id,
 		ar.text AS age_rating,
 		t.duration,
 		t.description,
@@ -209,10 +217,12 @@ func GetTitleById(id uint64) (Title, error) {
 	query := `SELECT
 		t.id,
 		tt.name AS type,
+		t.type AS type_char,
 		t.title,
 		t.translated_title,
 		t.premier_date,
 		t.genre,
+		t.age_rating AS age_rating_id,
 		ar.text AS age_rating,
 		t.duration,
 		t.description,
@@ -247,4 +257,77 @@ func GetTitleById(id uint64) (Title, error) {
 	}
 
 	return title, nil
+}
+
+func UpdateTitle(titleId uint64, titleTitle, translatedTitle, typeChar, genre string,
+	ageRatingId uint64,
+	country, description, premierDate, duration string,
+	numberOfEpisodes, numberOfSeasons int) (uint64, error) {
+	query := `
+		UPDATE title SET
+			title = $1,
+			translated_title = $2,
+			type = $3,
+			genre = $4,
+			age_rating = $5,
+			country = $6,
+			description = $7,
+			premier_date = $8,
+			duration = $9,
+			number_of_episodes = $10,
+			number_of_seasons = $11
+		WHERE
+			title.id = $12
+		RETURNING id
+	`
+	var updatedTitleId uint64
+	err := db.Get(&updatedTitleId, query, titleTitle, translatedTitle, typeChar, genre, ageRatingId, country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons, titleId)
+	if err != nil {
+		return 0, err
+	}
+
+	return updatedTitleId, nil
+}
+
+func InsertTitle(titleTitle, translatedTitle, typeChar, genre string, ageRatingId uint64,
+	country, description, premierDate, duration string,
+	numberOfEpisodes, numberOfSeasons int) (uint64, error) {
+
+	query := `
+		INSERT INTO title(
+			title,
+			translated_title,
+			type,
+			genre,
+			age_rating,
+			country,
+			description,
+			premier_date,
+			duration,
+			number_of_episodes,
+			number_of_seasons)
+		VALUES
+			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		RETURNING id
+	`
+	var titleId uint64
+	err := db.Get(&titleId, query, titleTitle, translatedTitle, typeChar, genre, ageRatingId, country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons)
+	if err != nil {
+		return 0, err
+	}
+
+	return titleId, nil
+}
+
+func DeleteTitle(titleId uint64) error {
+	query := `
+		DELETE FROM title WHERE title.id = $1
+	`
+
+	_, err := db.Exec(query, titleId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,0 +1,50 @@
+{{ block "admin_titles" . }}
+{{ template "header" . }}
+
+<div class="ml-10 mr-10 mt-10 overflow-x-auto">
+	<table class="table table-zebra">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Название</th>
+				<th>Переведенное название</th>
+				<th>Дата премьеры</th>
+				<th>Возрастной рейтинг</th>
+				<th>Продолжительность</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{{ range .Titles }}
+			<tr>
+				<th>{{ .Id }}</th>
+				<td>{{ .Title }} </td>
+				<td>{{ .TranslatedTitle }}</td>
+				<td>{{ .PremierDate.Format "02.01.2006" }} </td>
+				<td>{{ .AgeRating }} </td>
+				<td>{{ .Duration }} </td>
+				<td><a href="/admin/titles/{{ .Id }}" class="btn btn-outline">Изменить</a></td>
+				<td><button onclick="my_modal_1.showModal()" class="btn btn-outline btn-error">Удалить</button></td>
+			</tr>
+			<dialog id="my_modal_1" class="modal">
+				<div class="modal-box">
+					<h3 class="font-bold text-lg text-error">Подтвердите действие</h3>
+					<p class="py-4">Вы точно хотите удалить запись с названием {{ .Title }}?</p>
+					<div class="modal-action">
+						<form action="/admin/titles/{{ .Id }}/delete" method="POST">
+							<button class="btn btn-error">УДАЛИТЬ<button>
+						</form>
+						<form method="dialog">
+							<button class="btn">Отмена</button>
+						</form>
+					</div>
+				</div>
+			</dialog>
+			{{ end }}
+		</tbody>
+	</table>
+</div>
+
+{{ template "footer" . }}
+{{ end }}
