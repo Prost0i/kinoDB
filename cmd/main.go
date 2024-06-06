@@ -62,7 +62,17 @@ func main() {
 			return c.String(500, err.Error())
 		}
 
-		titles, err := model.GetAllTitles()
+		urlQuery := c.Request().URL.Query()
+		titleTitle := urlQuery.Get("title_title")
+		genre := urlQuery.Get("genre")
+		typeChar := urlQuery.Get("type_char")
+		if typeChar == "" {
+			typeChar = "all"
+		}
+		orderBy := urlQuery.Get("order_by")
+		log.Println(titleTitle)
+
+		titles, err := model.FilterTitles(titleTitle, genre, typeChar, orderBy)
 		if err != nil {
 			log.Fatal(err)
 		}
