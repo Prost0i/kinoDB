@@ -42,13 +42,13 @@ type PageData struct {
 }
 
 func main() {
-	if err := model.ConnectDB(); err != nil {
+	dbConnectString := os.Getenv("DB_CONNECT_STRING")
+	if err := model.ConnectDB(dbConnectString); err != nil {
 		log.Fatal(err)
 	}
 
-	// FIXME: DO NOT STORE SESSION KEY IN SOURCE FILE!!!
-	//        DO NOT USE THIS SESSION KEY IN PRODUCTION!!!
-	model.InitUserSessions([]byte("6da35044863f15376abb9b27aa1c65dd01dfc31f98f1730ec4cfcb7f06ff10ba"))
+	sessionKey := os.Getenv("SESSION_KEY")
+	model.InitUserSessions([]byte(sessionKey))
 
 	e := echo.New()
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -72,7 +72,6 @@ func main() {
 			typeChar = "all"
 		}
 		orderBy := urlQuery.Get("order_by")
-		log.Println(titleTitle)
 
 		titles, err := model.FilterTitles(titleTitle, genre, typeChar, orderBy)
 		if err != nil {
@@ -128,7 +127,13 @@ func main() {
 			reviewPtr = &review
 		}
 
-		return c.Render(200, "title", PageData{Title: title, User: user, IsUserAuthenticated: isLogged, RatingStars: ratingStars, Reviews: reviews, Review: reviewPtr})
+		return c.Render(200, "title", PageData{
+			Title:               title,
+			User:                user,
+			IsUserAuthenticated: isLogged,
+			RatingStars:         ratingStars,
+			Reviews:             reviews,
+			Review:              reviewPtr})
 	})
 
 	e.POST("/title/:id", func(c echo.Context) error {
@@ -263,15 +268,6 @@ func main() {
 		return c.Redirect(302, "/title/"+titleIdStr)
 	})
 
-	e.GET("/logout", func(c echo.Context) error {
-		err := model.Logout(c.Request(), c.Response().Writer)
-		if err != nil {
-			c.String(502, err.Error())
-		}
-
-		return c.Redirect(302, "/")
-	})
-
 	e.GET("/signup", func(c echo.Context) error {
 		_, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
 		if err != nil {
@@ -303,11 +299,13 @@ func main() {
 		if action == "login" {
 			user, err := model.GetUserByEmail(email)
 			if err != nil {
-				return c.Render(200, "signup", PageData{LoginErrors: []string{"Неверный email или пароль"}})
+				return c.Render(200, "signup", PageData{LoginErrors: []string{
+					"Неверный email или пароль"}})
 			}
 
 			if !user.CheckPassword(password) {
-				return c.Render(200, "signup", PageData{LoginErrors: []string{"Неверный email или пароль"}})
+				return c.Render(200, "signup", PageData{LoginErrors: []string{
+					"Неверный email или пароль"}})
 			}
 
 			if err := model.Login(c.Request(), c.Response().Writer, user.Id); err != nil {
@@ -318,7 +316,8 @@ func main() {
 		} else if action == "signup" {
 			_, err := mail.ParseAddress(email)
 			if err != nil {
-				return c.Render(200, "signup", PageData{SignupErrors: []string{"Недействительный email"}})
+				return c.Render(200, "signup", PageData{SignupErrors: []string{
+					"Недействительный email"}})
 			}
 
 			emailExists, err := model.CheckUserEmailExists(email)
@@ -327,13 +326,15 @@ func main() {
 			}
 
 			if emailExists {
-				return c.Render(200, "signup", PageData{SignupErrors: []string{"Аккаунт с таким email уже существует"}})
+				return c.Render(200, "signup", PageData{SignupErrors: []string{
+					"Аккаунт с таким email уже существует"}})
 			}
 
 			userId, err := model.RegisterUser(email, username, password)
 			if err != nil {
 				if err.Error() == "Email already exists" {
-					return c.Render(200, "signup", PageData{SignupErrors: []string{"Аккаунт с таким email уже существует"}})
+					return c.Render(200, "signup", PageData{
+						SignupErrors: []string{"Аккаунт с таким email уже существует"}})
 				}
 
 				return c.String(500, err.Error())
@@ -347,6 +348,15 @@ func main() {
 		}
 
 		return c.String(500, "500")
+	})
+
+	e.GET("/logout", func(c echo.Context) error {
+		err := model.Logout(c.Request(), c.Response().Writer)
+		if err != nil {
+			c.String(502, err.Error())
+		}
+
+		return c.Redirect(302, "/")
 	})
 
 	adminGroup := e.Group("/admin")
@@ -375,7 +385,10 @@ func main() {
 			return c.String(500, err.Error())
 		}
 
-		return c.Render(200, "admin_titles", PageData{User: user, IsUserAuthenticated: isLogged, Titles: titles})
+		return c.Render(200, "admin_titles", PageData{
+			User:                user,
+			IsUserAuthenticated: isLogged,
+			Titles:              titles})
 	})
 
 	adminGroup.GET("/titles/:id", func(c echo.Context) error {
@@ -395,7 +408,10 @@ func main() {
 			return c.String(500, err.Error())
 		}
 
-		return c.Render(200, "admin_title_form", PageData{User: user, IsUserAuthenticated: isLogged, Title: title})
+		return c.Render(200, "admin_title_form", PageData{
+			User:                user,
+			IsUserAuthenticated: isLogged,
+			Title:               title})
 	})
 
 	adminGroup.POST("/titles/:id", func(c echo.Context) error {
@@ -431,7 +447,19 @@ func main() {
 			return c.String(500, err.Error())
 		}
 
-		_, err = model.UpdateTitle(uint64(titleId), titleTitle, translatedTitle, typeChar, genre, uint64(ageRatingId), country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons)
+		_, err = model.UpdateTitle(
+			uint64(titleId),
+			titleTitle,
+			translatedTitle,
+			typeChar,
+			genre,
+			uint64(ageRatingId),
+			country,
+			description,
+			premierDate,
+			duration,
+			numberOfEpisodes,
+			numberOfSeasons)
 		if err != nil {
 			return c.String(500, err.Error())
 		}
@@ -454,7 +482,8 @@ func main() {
 			}
 			defer posterSrc.Close()
 
-			posterDst, err := os.Create("./static/images/image" + strconv.Itoa(int(titleId)) + ".jpg")
+			posterDst, err := os.Create("./static/images/image" +
+				strconv.Itoa(int(titleId)) + ".jpg")
 			defer posterDst.Close()
 
 			if _, err := io.Copy(posterDst, posterSrc); err != nil {
@@ -482,13 +511,16 @@ func main() {
 		return c.Redirect(302, "/admin/titles")
 
 	})
+
 	adminGroup.GET("/create_title", func(c echo.Context) error {
 		user, isLogged, err := model.IsUserLoggedIn(c.Request(), c.Response().Writer)
 		if err != nil {
 			return c.String(500, err.Error())
 		}
 
-		return c.Render(200, "admin_title_form", PageData{User: user, IsUserAuthenticated: isLogged})
+		return c.Render(200, "admin_title_form", PageData{
+			User:                user,
+			IsUserAuthenticated: isLogged})
 	})
 
 	adminGroup.POST("/create_title", func(c echo.Context) error {
@@ -518,7 +550,18 @@ func main() {
 			return c.String(500, err.Error())
 		}
 
-		titleId, err := model.InsertTitle(titleTitle, translatedTitle, typeChar, genre, uint64(ageRatingId), country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons)
+		titleId, err := model.InsertTitle(
+			titleTitle,
+			translatedTitle,
+			typeChar,
+			genre,
+			uint64(ageRatingId),
+			country,
+			description,
+			premierDate,
+			duration,
+			numberOfEpisodes,
+			numberOfSeasons)
 		if err != nil {
 			return c.String(500, err.Error())
 		}
@@ -541,7 +584,8 @@ func main() {
 			}
 			defer posterSrc.Close()
 
-			posterDst, err := os.Create("./static/images/image" + strconv.Itoa(int(titleId)) + ".jpg")
+			posterDst, err := os.Create("./static/images/image" +
+				strconv.Itoa(int(titleId)) + ".jpg")
 			defer posterDst.Close()
 
 			if _, err := io.Copy(posterDst, posterSrc); err != nil {

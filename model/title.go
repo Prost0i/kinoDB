@@ -281,7 +281,21 @@ func UpdateTitle(titleId uint64, titleTitle, translatedTitle, typeChar, genre st
 		RETURNING id
 	`
 	var updatedTitleId uint64
-	err := db.Get(&updatedTitleId, query, titleTitle, translatedTitle, typeChar, genre, ageRatingId, country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons, titleId)
+	err := db.Get(
+		&updatedTitleId,
+		query,
+		titleTitle,
+		translatedTitle,
+		typeChar,
+		genre,
+		ageRatingId,
+		country,
+		description,
+		premierDate,
+		duration,
+		numberOfEpisodes,
+		numberOfSeasons,
+		titleId)
 	if err != nil {
 		return 0, err
 	}
@@ -311,7 +325,20 @@ func InsertTitle(titleTitle, translatedTitle, typeChar, genre string, ageRatingI
 		RETURNING id
 	`
 	var titleId uint64
-	err := db.Get(&titleId, query, titleTitle, translatedTitle, typeChar, genre, ageRatingId, country, description, premierDate, duration, numberOfEpisodes, numberOfSeasons)
+	err := db.Get(
+		&titleId,
+		query,
+		titleTitle,
+		translatedTitle,
+		typeChar,
+		genre,
+		ageRatingId,
+		country,
+		description,
+		premierDate,
+		duration,
+		numberOfEpisodes,
+		numberOfSeasons)
 	if err != nil {
 		return 0, err
 	}

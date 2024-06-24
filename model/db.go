@@ -7,8 +7,7 @@ import (
 
 var db *sqlx.DB
 
-func ConnectDB() error {
-	connectString := `host=localhost port=5432 user=postgres dbname=kinodb sslmode=disable`
+func ConnectDB(connectString string) error {
 	var err error
 	db, err = sqlx.Open("postgres", connectString)
 	if err != nil {

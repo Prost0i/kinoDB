@@ -82,16 +82,6 @@ func Logout(r *http.Request, w http.ResponseWriter) error {
 	return nil
 }
 
-func (u *User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password))
-	return err == nil
-}
-
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
-	return string(bytes), err
-}
-
 func GetUserByEmail(email string) (User, error) {
 	user := User{}
 
@@ -122,9 +112,18 @@ func CheckUserEmailExists(email string) (bool, error) {
 	if err := db.Get(&exists, query, email); err != nil {
 		return false, err
 	}
-	fmt.Println(exists)
 
 	return exists, nil
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	return string(bytes), err
+}
+
+func (u *User) CheckPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password))
+	return err == nil
 }
 
 func RegisterUser(email, username, password string) (uint64, error) {
